@@ -1,0 +1,258 @@
+﻿/*
+Author: Patrick F. & Maxwell V. W
+Class: GPR - 200
+Assignment: Lab 2
+Date Assigned: 9/10/2020
+Due Date: 9/17/2020
+
+
+Description:
+   This creates a green-red gradient
+
+
+ Certification of Authenticity:
+   I certify that this is entirely my own work, except where I have given fully
+   documented references to the work of others. I understand the definition and
+   consequences of plagiarism and acknowledge that the assessor of this assignment
+   may, for the purpose of assessing this assignment:
+   - Reproduce this assignment and provide a copy to another member of academic staff; and/or
+   - Communicate a copy of this assignment to a plagiarism checking service
+     (which may then retain a copy of this assignment on its database for
+     the purpose of future plagiarism checking)
+*/
+
+
+Effect #0
+
+
+#define colorRGB    vec3
+#define colorRGBA    vec4
+vec4 myEffect0(in vec2 fragCoord)
+{
+    //sets uv to orange
+    vec2 uv = fragCoord / iResolution.xy;
+
+
+     //sets gradient from uv all the way to 1.0 or red
+    return vec4(uv, 0.0, 1.0);
+}
+
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+
+
+    //outputs gradient
+    fragColor = myEffect0(fragCoord);
+
+
+}
+_______________________________________
+
+
+Effect #1
+
+
+/*
+Author: Patrick F. & Maxwell V. W
+Class: GPR - 200
+Assignment: Lab 2
+Date Assigned: 9/10/2020
+Due Date: 9/17/2020
+
+
+Description:
+   This creates a red and black checkerboard
+
+
+ Certification of Authenticity:
+   I certify that this is entirely my own work, except where I have given fully
+   documented references to the work of others. I understand the definition and
+   consequences of plagiarism and acknowledge that the assessor of this assignment
+   may, for the purpose of assessing this assignment:
+   - Reproduce this assignment and provide a copy to another member of academic staff; and/or
+   - Communicate a copy of this assignment to a plagiarism checking service
+     (which may then retain a copy of this assignment on its database for
+     the purpose of future plagiarism checking)
+*/
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+     //Refrence code used from Nikos Papadopoulos to format checkers
+    //sets tile size, black spaces and the red checkers
+    float tileSize = 60.0f;
+        float modNum =2.0f;
+        vec4 color = vec4(1.0, 0.0, 0.0, 0.0); 
+    
+    //maps out red checkers
+        vec2 tile = floor(fragCoord / tileSize);
+    
+    //maps out black checkers
+    float pattern = mod(tile.x + tile.y, modNum);
+    
+    //sets pattern and color to output
+    fragColor = pattern * color;
+        
+}
+____________________________________________________
+
+
+Effect #2
+/*
+Author: Patrick F. & Maxwell V. W
+Class: GPR - 200
+Assignment: Lab 2
+Date Assigned: 9/10/2020
+Due Date: 9/17/2020
+
+
+Description:
+   Creates a circle with a background, the background, and circle change color. The circle changes size.
+
+
+ Certification of Authenticity:
+   I certify that this is entirely my own work, except where I have given fully
+   documented references to the work of others. I understand the definition and
+   consequences of plagiarism and acknowledge that the assessor of this assignment
+   may, for the purpose of assessing this assignment:
+   - Reproduce this assignment and provide a copy to another member of academic staff; and/or
+   - Communicate a copy of this assignment to a plagiarism checking service
+     (which may then retain a copy of this assignment on its database for
+     the purpose of future plagiarism checking)
+*/
+#define S 5. //Square
+
+
+//Referenced code from Yeis for color changing
+//Refrenced OpenGL®SL Version 4.60.7 page 164
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    //sets the backgroung
+    vec4 background = vec4(1.0, 2.0, 5.0, 4.0);
+    
+    
+        //sets the circles shape, size and shape change
+    vec2 circle = 4.0 * vec2(fragCoord.xy - 0.5 * iResolution.xy)/iResolution.y;
+    float radius = cos(iTime);
+
+
+    //sets the circles color
+    vec4 color = vec4(circle, 0.8 + 0.2, 1.0);
+
+
+    //changes the background color
+    vec4 white = vec4(10.0 * cos(iTime));
+    vec4 pixel = white;
+    if(length(circle) < radius*radius)
+    {
+        pixel = color;
+    }
+
+
+    fragColor = pixel;
+    
+    
+        //uses mix to put the circle in the foreground
+    fragColor = mix(background, white, pixel);
+}
+_________________________________________________
+
+
+Effect #3
+
+
+/*
+Author: Patrick F. & Maxwell V. W
+Class: GPR - 200
+Assignment: Lab 2
+Date Assigned: 9/10/2020
+Due Date: 9/17/2020
+
+
+Description:
+   Uses code from previous effects plus image manipulated background to create psychedelic visual.
+
+
+ Certification of Authenticity:
+   I certify that this is entirely my own work, except where I have given fully
+   documented references to the work of others. I understand the definition and
+   consequences of plagiarism and acknowledge that the assessor of this assignment
+   may, for the purpose of assessing this assignment:
+   - Reproduce this assignment and provide a copy to another member of academic staff; and/or
+   - Communicate a copy of this assignment to a plagiarism checking service
+     (which may then retain a copy of this assignment on its database for
+     the purpose of future plagiarism checking)
+*/
+
+
+//Refrenced code from Klems for changing background
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+     
+    float f = fract(iTime);
+    
+    
+   //sets position of movement
+    vec2 v = iResolution.xy;
+    fragCoord = (fragCoord-v*.5)*.4 / v.y;
+    //develops movement
+    fragCoord += fragCoord * sin(dot(fragCoord, fragCoord)*20.-iTime) * .04;
+    
+    // set changing colors
+    fragColor *= 0.;
+    for (float i = 1.5 ; i < 8. ; i++)
+        
+        // fractal formula to rotate psychedelic effect
+    fragCoord = abs(2.*fract(fragCoord-.5)-1.) * mat2(sin(.01*(iTime+iMouse.x*.1)*i*i + .78*vec4(1,7,3,1))),
+        
+        Sets output to color developed
+    fragColor += exp(-abs(fragCoord.y)*5.) * (cos(vec4(2,3,1,0)*i)*.5+.5);
+    
+ 
+    //Reused code from effect #2 to help color changing over backgorund
+    vec2 uvs = fragCoord/iResolution.xy;
+    float radialGradient = length(uvs) * 7.2;
+    vec4 background = vec4(1.0, 2.0, 3.0, 7.0);
+    vec4 white = vec4(7.0 * cos(iTime));
+    
+    float gridRows=5.0;
+    float gridCols=5.0;
+    float satFactor=0.5;
+    float movingSpeed=1.0;
+    
+    vec2 circle_center = iResolution.xy/1.0; //pixels
+    float circle_radius = iTime * 8.0;
+    
+ 
+    circle_radius = mod(circle_radius, 200.0);
+    
+     // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = fragCoord/iResolution.xy;
+    
+    //We find out in which grid the pixel is
+    int pixCol=int(uv.x*circle_center);
+    int pixRow=int(uv.y*circle_radius);
+    
+    vec2 r =  1.0*vec2(fragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
+    float radius = 0.5;
+    
+    vec4  color = vec4(r,0.1+0.3*sin(iTime),0.1);
+        
+    vec4 whites = vec4(0.0);
+    vec4 pixel;
+    pixel = white;
+    if(length(r) < radius*radius)
+    {
+        pixel=  color;
+    }
+   
+    // Time-varying pixel color
+    
+    vec3 col = satFactor + satFactor*cos(iTime*movingSpeed+vec3(pixCol,pixRow,circle_radius)+vec3(0,2,4));
+
+
+    // Output to screen
+ 
+    fragColor = mix(vec4(col,1.0), pixel, radialGradient);
+    
+        
+}
